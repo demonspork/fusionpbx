@@ -151,7 +151,7 @@ if (is_array($result) && @sizeof($result) != 0) {
 		}
 
 		//get emails
-		if ($emails = imap_search($connection, "SUBJECT \"[".$fax_email_outbound_subject_tag."]\"", SE_UID)) {
+		if ($emails = imap_search($connection, "ALL", SE_UID)) {
 
 			//get authorized sender(s)
 			if (substr_count($fax_email_outbound_authorized_senders, ',') > 0) {
@@ -183,11 +183,11 @@ if (is_array($result) && @sizeof($result) != 0) {
 					$mailto_address_user = $metadata[0]['from'];
 
 					//parse recipient fax number(s)
-					$fax_subject = $metadata[0]['subject'];
-					$tmp = explode(']', $fax_subject); //closing bracket of subject tag
-					$tmp = $tmp[1];
-					$tmp = str_replace(':', ',', $tmp);
-					$tmp = str_replace(';', ',', $tmp);
+					$fax_subject = $metadata[0]['to'];
+					$tmp = strstr($fax_subject, '@', true);
+					//$tmp = $tmp[1];
+					//$tmp = str_replace(':', ',', $tmp);
+					//$tmp = str_replace(';', ',', $tmp);
 					$tmp = str_replace('|', ',', $tmp);
 					if (substr_count($tmp, ',') > 0) {
 						$fax_numbers = explode(',', $tmp);
