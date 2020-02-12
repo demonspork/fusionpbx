@@ -151,6 +151,11 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		else if ($background_colors[0] == '' && $background_colors[1] != '') { // use color 2
 			$background_color = "background: ".$background_colors[1].";";
 		}
+		else if ($background_colors[0] != '' && $background_colors[1] != '' && isset($_SESSION['theme']['background_radial_gradient']['text'])) { // radial gradient
+			$background_color = "background: ".$background_colors[0].";\n";
+			$background_color .= "background: -ms-radial-gradient(center, circle, ".$background_colors[0]." 0%, ".$background_colors[1]." 100%);\n";
+			$background_color .= "background: radial-gradient(circle at center, ".$background_colors[0]." 0%, ".$background_colors[1]." 100%);\n";
+		}
 		else if ($background_colors[0] != '' && $background_colors[1] != '') { // vertical gradient
 			$background_color = "background: ".$background_colors[0].";\n";
 			$background_color .= "background: -ms-linear-gradient(top, ".$background_colors[0]." 0%, ".$background_colors[1]." 100%);\n";
@@ -617,6 +622,7 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		font-weight: <?php echo ($_SESSION['theme']['button_text_weight']['text'] != '') ? $_SESSION['theme']['button_text_weight']['text'] : 'bold'; ?>;
 		font-size: <?php echo ($_SESSION['theme']['button_text_size']['text'] != '') ? $_SESSION['theme']['button_text_size']['text'] : '11px'; ?>;
 		vertical-align: middle;
+		white-space: nowrap;
 		}
 
 	input.btn:hover,
@@ -2340,6 +2346,10 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		box-shadow: <?php echo ($_SESSION['theme']['action_bar_shadow_scroll']['text'] != '') ? $_SESSION['theme']['action_bar_shadow_scroll']['text'] : '0 3px 3px 0 rgba(0,0,0,0.2)'; ?>;
 		}
 
+	div.action_bar.sub {
+		position: static;
+		}
+
 	div.action_bar > div.heading {
 		float: left;
 		}
@@ -2347,6 +2357,16 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 	div.action_bar > div.actions {
 		float: right;
 		white-space: nowrap;
+		}
+
+	/* used primarily in contacts */
+	div.action_bar.shrink {
+		margin-bottom: 0;
+		padding-bottom: 0;
+		}
+
+	div.action_bar.shrink > div.heading > b {
+		font-size: 100%;
 		}
 
 /* LIST ************************************************************************/
@@ -2377,7 +2397,7 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		}
 
 	.list-header > th.shrink {
-		width: 1px;
+		width: 1%;
 		}
 
 	.list-row:nth-child(odd) > :not(.action-button) {
@@ -2394,7 +2414,7 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		font-family: <?php echo ($_SESSION['theme']['table_row_text_font']['text'] != '') ? $_SESSION['theme']['table_row_text_font']['text'] : 'arial'; ?>;
 		font-size: <?php echo ($_SESSION['theme']['table_row_text_size']['text'] != '') ? $_SESSION['theme']['table_row_text_size']['text'] : '12px'; ?>;
 		text-align: left;
-		vertical-align: top;
+		vertical-align: middle;
 		}
 
 	.list-row > :not(.checkbox) {
@@ -2407,8 +2427,8 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 
 	.list-header > .checkbox,
 	.list-row > .checkbox {
-		width: 1px;
-		text-align: center;
+		width: 1%;
+		text-align: center !important;
 		cursor: default !important;
 		}
 
@@ -2420,6 +2440,13 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 		margin: 0;
 		padding-top: 1px;
 		padding-bottom: 1px;
+		white-space: nowrap;
+		}
+
+	.list-row > .input {
+		margin: 0;
+		padding-top: 0;
+		padding-bottom: 0;
 		white-space: nowrap;
 		}
 
@@ -2467,29 +2494,150 @@ $default_login = ($_REQUEST['login'] == 'default') ? true : false;
 
 /* WIDTH HELPERS **********************************************************************/
 
-	.min-pct-5 { min-width: 5%; }
-	.min-pct-10 { min-width: 10%; }
-	.min-pct-15 { min-width: 15%; }
-	.min-pct-20 { min-width: 20%; }
-	.min-pct-25 { min-width: 25%; }
-	.min-pct-30 { min-width: 30%; }
-	.min-pct-35 { min-width: 35%; }
-	.min-pct-40 { min-width: 40%; }
-	.min-pct-45 { min-width: 45%; }
-	.min-pct-50 { min-width: 50%; }
-	.min-pct-55 { min-width: 55%; }
-	.min-pct-60 { min-width: 60%; }
-	.min-pct-65 { min-width: 65%; }
-	.min-pct-70 { min-width: 70%; }
-	.min-pct-75 { min-width: 75%; }
-	.min-pct-80 { min-width: 80%; }
-	.min-pct-85 { min-width: 85%; }
-	.min-pct-90 { min-width: 90%; }
-	.min-pct-95 { min-width: 95%; }
-	.min-pct-100 { min-width: 100%; }
+	.pct-5 { width: 5%; }
+	.pct-10 { width: 10%; }
+	.pct-15 { width: 15%; }
+	.pct-20 { width: 20%; }
+	.pct-25 { width: 25%; }
+	.pct-30 { width: 30%; }
+	.pct-35 { width: 35%; }
+	.pct-40 { width: 40%; }
+	.pct-45 { width: 45%; }
+	.pct-50 { width: 50%; }
+	.pct-55 { width: 55%; }
+	.pct-60 { width: 60%; }
+	.pct-65 { width: 65%; }
+	.pct-70 { width: 70%; }
+	.pct-75 { width: 75%; }
+	.pct-80 { width: 80%; }
+	.pct-85 { width: 85%; }
+	.pct-90 { width: 90%; }
+	.pct-95 { width: 95%; }
+	.pct-100 { width: 100%; }
+
+/* SIDE PADDING & MARGIN HELPERS **********************************************************************/
+
+	.pl-1 { padding-left: 1px !important; }		.pr-1 { padding-right: 1px !important; }
+	.pl-2 { padding-left: 2px !important; }		.pr-2 { padding-right: 2px !important; }
+	.pl-3 { padding-left: 3px !important; }		.pr-3 { padding-right: 3px !important; }
+	.pl-4 { padding-left: 4px !important; }		.pr-4 { padding-right: 4px !important; }
+	.pl-5 { padding-left: 5px !important; }		.pr-5 { padding-right: 5px !important; }
+	.pl-6 { padding-left: 6px !important; }		.pr-6 { padding-right: 6px !important; }
+	.pl-7 { padding-left: 7px !important; }		.pr-7 { padding-right: 7px !important; }
+	.pl-8 { padding-left: 8px !important; }		.pr-8 { padding-right: 8px !important; }
+	.pl-9 { padding-left: 9px !important; }		.pr-9 { padding-right: 9px !important; }
+	.pl-10 { padding-left: 10px !important; }	.pr-10 { padding-right: 10px !important; }
+	.pl-11 { padding-left: 11px !important; }	.pr-11 { padding-right: 11px !important; }
+	.pl-12 { padding-left: 12px !important; }	.pr-12 { padding-right: 12px !important; }
+	.pl-13 { padding-left: 13px !important; }	.pr-13 { padding-right: 13px !important; }
+	.pl-14 { padding-left: 14px !important; }	.pr-14 { padding-right: 14px !important; }
+	.pl-15 { padding-left: 15px !important; }	.pr-15 { padding-right: 15px !important; }
+	.pl-20 { padding-left: 20px !important; }	.pr-20 { padding-right: 20px !important; }
+	.pl-25 { padding-left: 25px !important; }	.pr-25 { padding-right: 25px !important; }
+	.pl-30 { padding-left: 30px !important; }	.pr-30 { padding-right: 30px !important; }
+	.pl-35 { padding-left: 35px !important; }	.pr-35 { padding-right: 35px !important; }
+	.pl-40 { padding-left: 40px !important; }	.pr-40 { padding-right: 40px !important; }
+	.pl-45 { padding-left: 45px !important; }	.pr-45 { padding-right: 45px !important; }
+	.pl-50 { padding-left: 50px !important; }	.pr-50 { padding-right: 50px !important; }
+
+	.ml-1 { margin-left: 1px !important; }		.mr-1 { margin-right: 1px !important; }
+	.ml-2 { margin-left: 2px !important; }		.mr-2 { margin-right: 2px !important; }
+	.ml-3 { margin-left: 3px !important; }		.mr-3 { margin-right: 3px !important; }
+	.ml-4 { margin-left: 4px !important; }		.mr-4 { margin-right: 4px !important; }
+	.ml-5 { margin-left: 5px !important; }		.mr-5 { margin-right: 5px !important; }
+	.ml-6 { margin-left: 6px !important; }		.mr-6 { margin-right: 6px !important; }
+	.ml-7 { margin-left: 7px !important; }		.mr-7 { margin-right: 7px !important; }
+	.ml-8 { margin-left: 8px !important; }		.mr-8 { margin-right: 8px !important; }
+	.ml-9 { margin-left: 9px !important; }		.mr-9 { margin-right: 9px !important; }
+	.ml-10 { margin-left: 10px !important; }	.mr-10 { margin-right: 10px !important; }
+	.ml-11 { margin-left: 11px !important; }	.mr-11 { margin-right: 11px !important; }
+	.ml-12 { margin-left: 12px !important; }	.mr-12 { margin-right: 12px !important; }
+	.ml-13 { margin-left: 13px !important; }	.mr-13 { margin-right: 13px !important; }
+	.ml-14 { margin-left: 14px !important; }	.mr-14 { margin-right: 14px !important; }
+	.ml-15 { margin-left: 15px !important; }	.mr-15 { margin-right: 15px !important; }
+	.ml-20 { margin-left: 20px !important; }	.mr-20 { margin-right: 20px !important; }
+	.ml-25 { margin-left: 25px !important; }	.mr-25 { margin-right: 25px !important; }
+	.ml-30 { margin-left: 30px !important; }	.mr-30 { margin-right: 30px !important; }
+	.ml-35 { margin-left: 35px !important; }	.mr-35 { margin-right: 35px !important; }
+	.ml-40 { margin-left: 40px !important; }	.mr-40 { margin-right: 40px !important; }
+	.ml-45 { margin-left: 45px !important; }	.mr-45 { margin-right: 45px !important; }
+	.ml-50 { margin-left: 50px !important; }	.mr-50 { margin-right: 50px !important; }
 
 /* MODAL ************************************************************************/
 
-	div.modal-footer {
-		justify-content: space-between;
+	.modal-window {
+		z-index: 999999;
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		pointer-events: none;
+		-webkit-transition: all 0.3s;
+		-moz-transition: all 0.3s;
+		transition: all 0.3s;
+		background-color: rgba(0, 0, 0, 0.3);
+		}
+
+	.modal-window:target {
+		opacity: 1;
+		pointer-events: auto;
+		}
+
+	.modal-window > div {
+		position: relative;
+		padding: 15px 20px 20px 20px;
+		text-align: left;
+		color: #444;
+		background: #fff;
+		overflow: auto;
+		}
+
+	@media(min-width: 0px) and (max-width: 699px) {
+		.modal-window > div {
+			width: 100%;
+			min-width: 200px;
+			margin: 50px auto;
+			border-radius: 0;
+			}
+		}
+
+	@media(min-width: 700px) {
+		.modal-window > div {
+			width: 40%;
+			min-width: 400px;
+			max-width: 500px;
+			margin: 10% auto;
+			border-radius: 5px;
+			}
+		}
+
+	.modal-window .modal-title {
+		display: block;
+		font-weight: bold;
+		font-size: 120%;
+		margin-bottom: 15px;
+		}
+
+	.modal-close {
+		color: #aaa;
+		line-height: 50px;
+		font-size: 150%;
+		position: absolute;
+		top: 0;
+		right: 0;
+		width: 50px;
+		text-align: center;
+		text-decoration: none !important;
+		}
+
+	.modal-close:hover {
+		color: #000;
+		}
+
+	.modal-window .modal-message {
+		display: block;
+		text-align: left;
+		margin-bottom: 20px;
 		}

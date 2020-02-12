@@ -53,6 +53,14 @@
 //process the http post data by action
 	if ($action != '' && is_array($modules) && @sizeof($modules) != 0) {
 		switch ($action) {
+			case 'start':
+				$obj = new modules;
+				$obj->start($modules);
+				break;
+			case 'stop':
+				$obj = new modules;
+				$obj->stop($modules);
+				break;
 			case 'toggle':
 				if (permission_exists('module_edit')) {
 					$obj = new modules;
@@ -73,26 +81,6 @@
 
 //connect to event socket
 	$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
-
-//control the modules
-	if ($fp && is_array($modules) && @sizeof($modules) != 0) {
-		if ($action == 'start') {
-			//start
-				$obj = new modules;
-				$obj->start($modules);
-			//redirect
-				header('Location: modules.php'.($search != '' ? '?search='.urlencode($search) : null));
-				exit;
-		}
-		if ($action == 'stop') {
-			//stop
-				$obj = new modules;
-				$obj->stop($modules);
-			//redirect
-				header('Location: modules.php'.($search != '' ? '?search='.urlencode($search) : null));
-				exit;
-		}
-	}
 
 //check connection status
 	$esl_alive = false;
@@ -174,7 +162,7 @@
 			echo "	</th>\n";
 		}
 		echo "<th>".$text['label-label']."</th>\n";
-		echo "<th class='hide-sm-dn'>".$text['label-status']."</th>\n";
+		echo "<th class='hide-xs'>".$text['label-status']."</th>\n";
 		if ($fp) {
 			echo "<th class='center'>".$text['label-action']."</th>\n";
 		}
@@ -221,7 +209,7 @@
 			echo "	</td>\n";
 			if ($fp) {
 				if ($module->active($row["module_name"])) {
-					echo "	<td class='hide-sm-dn'>".$text['label-running']."</td>\n";
+					echo "	<td class='hide-xs'>".$text['label-running']."</td>\n";
 					if (permission_exists('module_edit')) {
 						echo "	<td class='no-link center'>";
 						echo button::create(['type'=>'submit','class'=>'link','label'=>$text['label-stop'],'title'=>$text['button-stop'],'onclick'=>"list_self_check('checkbox_".$x."'); list_action_set('stop'); list_form_submit('form_list')"]);
@@ -229,7 +217,7 @@
 					}
 				}
 				else {
-					echo "	<td class='hide-sm-dn'>\n";
+					echo "	<td class='hide-xs'>\n";
 					echo $row['module_enabled'] == 'true' ? "<strong style='color: red;'>".$text['label-stopped']."</strong>" : $text['label-stopped']." ".escape($notice);
 					echo "	</td>\n";
 					if (permission_exists('module_edit')) {
@@ -240,7 +228,7 @@
 				}
 			}
 			else{
-				echo "   <td class='hide-sm-dn'>".$text['label-unknown']."</td>\n";
+				echo "   <td class='hide-xs'>".$text['label-unknown']."</td>\n";
 			}
 			if (permission_exists('module_edit')) {
 				echo "	<td class='no-link center'>";

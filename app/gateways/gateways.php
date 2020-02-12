@@ -70,6 +70,19 @@
 					$obj = new gateways;
 					$obj->delete($gateways);
 				}
+			case 'start':
+				$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
+				if ($fp && permission_exists('gateway_edit')) {
+					$obj = new gateways;
+					$obj->start($gateways);
+				}
+				break;
+			case 'stop':
+				$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
+				if ($fp && permission_exists('gateway_edit')) {
+					$obj = new gateways;
+					$obj->stop($gateways);
+				}
 				break;
 		}
 
@@ -79,26 +92,6 @@
 
 //connect to event socket
 	$fp = event_socket_create($_SESSION['event_socket_ip_address'], $_SESSION['event_socket_port'], $_SESSION['event_socket_password']);
-
-//control the gateways
-	if ($fp && is_array($gateways) && @sizeof($gateways) != 0) {
-		if ($action == 'start') {
-			//start
-				$obj = new gateways;
-				$obj->start($gateways);
-			//redirect
-				header('Location: gateways.php'.($search != '' ? '?search='.urlencode($search) : null));
-				exit;
-		}
-		if ($action == 'stop') {
-			//stop
-				$obj = new gateways;
-				$obj->stop($gateways);
-			//redirect
-				header('Location: gateways.php'.($search != '' ? '?search='.urlencode($search) : null));
-				exit;
-		}
-	}
 
 //gateway status function
 	if (!function_exists('switch_gateway_status')) {
@@ -129,7 +122,6 @@
 		$sql_search .= "or lower(username) like :search ";
 		$sql_search .= "or lower(auth_username) like :search ";
 		$sql_search .= "or lower(from_user) like :search ";
-		$sql_search .= "or lower(from_domain) like :search ";
 		$sql_search .= "or lower(from_domain) like :search ";
 		$sql_search .= "or lower(proxy) like :search ";
 		$sql_search .= "or lower(register_proxy) like :search ";
@@ -178,6 +170,7 @@
 	$token = $object->create($_SERVER['PHP_SELF']);
 
 //additional includes
+	$document['title'] = $text['title-gateways'];
 	require_once "resources/header.php";
 
 //show the content
