@@ -51,7 +51,7 @@
 				}
 			}
 			if ($db_type == "pgsql") {
-				$string = pg_escape_string($string);
+				$string = str_replace("'","''",$string);
 			}
 			if ($db_type == "mysql") {
 				if(function_exists('mysql_real_escape_string')){
@@ -2153,19 +2153,29 @@ function number_pad($number,$n) {
 		function persistent_form_values($action, $array = null) {
 			switch ($action) {
 				case 'store':
+					// $array is expected to be an array of key / value pairs to store in the session
 					if (is_array($array) && @sizeof($array) != 0) {
-						$_SESSION[$_SERVER['PHP_SELF']] = $array;
+						$_SESSION['persistent'][$_SERVER['PHP_SELF']] = $array;
 					}
 					break;
 				case 'exists':
-					return is_array($_SESSION[$_SERVER['PHP_SELF']]) && @sizeof($_SESSION[$_SERVER['PHP_SELF']]) != 0 ? true : false;
+					return is_array($_SESSION['persistent'][$_SERVER['PHP_SELF']]) && @sizeof($_SESSION['persistent'][$_SERVER['PHP_SELF']]) != 0 ? true : false;
 					break;
 				case 'load':
-					if (is_array($_SESSION[$_SERVER['PHP_SELF']]) && @sizeof($_SESSION[$_SERVER['PHP_SELF']]) != 0) {
-						foreach ($_SESSION[$_SERVER['PHP_SELF']] as $key => $value) {
+					// $array is expected to be the name of the array to create containing the key / value pairs
+					if ($array && !is_array($array)) {
+						global $$array;
+					}
+					if (is_array($_SESSION['persistent'][$_SERVER['PHP_SELF']]) && @sizeof($_SESSION['persistent'][$_SERVER['PHP_SELF']]) != 0) {
+						foreach ($_SESSION['persistent'][$_SERVER['PHP_SELF']] as $key => $value) {
 							if ($key != 'XID' && $key != 'ACT' && $key != 'RET') {
-								global $$key;
-								$$key = $value;
+								if ($array && !is_array($array)) {
+									$$array[$key] = $value;
+								}
+								else {
+									global $$key;
+									$$key = $value;
+								}
 							}
 						}
 						global $unsaved;
@@ -2173,15 +2183,25 @@ function number_pad($number,$n) {
 					}
 					break;
 				case 'view':
-					if (is_array($_SESSION[$_SERVER['PHP_SELF']]) && @sizeof($_SESSION[$_SERVER['PHP_SELF']]) != 0) {
-						view_array($_SESSION[$_SERVER['PHP_SELF']], false);
+					if (is_array($_SESSION['persistent'][$_SERVER['PHP_SELF']]) && @sizeof($_SESSION['persistent'][$_SERVER['PHP_SELF']]) != 0) {
+						view_array($_SESSION['persistent'][$_SERVER['PHP_SELF']], false);
 					}
 					break;
 				case 'clear':
-					unset($_SESSION[$_SERVER['PHP_SELF']]);
+					unset($_SESSION['persistent'][$_SERVER['PHP_SELF']]);
 					break;
 			}
 		}
+	}
+
+//add alternative array_key_first for older verisons of PHP
+	if (!function_exists('array_key_first')) {
+	    function array_key_first(array $arr) {
+		foreach($arr as $key => $unused) {
+		    return $key;
+		}
+		return NULL;
+	    }
 	}
 
 ?>

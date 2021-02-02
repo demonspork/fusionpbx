@@ -242,6 +242,7 @@
 	$sql .= "c.source_number, \n";
 	$sql .= "c.destination_number, \n";
 	$sql .= "c.leg, \n";
+	$sql .= "c.cc_side, \n";
 	//$sql .= "(c.xml is not null or c.json is not null) as raw_data_exists, \n";
 	//$sql .= "c.json, \n";
 	if (is_array($_SESSION['cdr']['field'])) {
@@ -533,7 +534,7 @@
 		$database->password = $_SESSION['cdr']['archive_database_password']['text'];
 	}
 	$result = $database->select($sql, $parameters, 'all');
-	$result_count = (count($result) ? count($result) : 0);
+	$result_count = is_array($result) ? sizeof($result) : 0;
 	unset($database, $sql, $parameters);
 
 //return the paging
