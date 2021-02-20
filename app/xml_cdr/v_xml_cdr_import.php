@@ -211,7 +211,7 @@
 
 		//set missed calls
 			$database->fields['missed_call'] = 'false';
-			if (strlen($xml->variables->answer_stamp) == 0) {
+			if (strlen($xml->variables->originating_leg_uuid) == 0 && $xml->variables->call_direction != 'outbound' && strlen($xml->variables->answer_stamp) == 0) {
 				$database->fields['missed_call'] = 'true';
 			}
 			if ($xml->variables->missed_call == 'true') {
@@ -292,7 +292,7 @@
 			if (strlen($domain_name) == 0) {
 				$presence_id = urldecode($xml->variables->presence_id);
 				if (strlen($presence_id) > 0) {
-					$presence_array = explode($presence_id);
+					$presence_array = explode($presence_id, '%40');
 					$domain_name = $presence_array[1];
 				}
 			}
